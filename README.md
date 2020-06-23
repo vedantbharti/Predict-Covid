@@ -6,4 +6,5 @@ It also uses 'Covid' API to get the current status of covid cases and displays i
 The prediction is done using Support Vector Regression and time series forecasting is done using Holt's Smoothing.
 
 The data has been collected from https://www.kaggle.com/imdevskp/corona-virus-report.
+
 API : https://pypi.org/project/covid/
