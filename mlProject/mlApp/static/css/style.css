@@ -1,0 +1,10 @@
+
+html,
+body {
+  height: 100%;
+}
+.Covidimg {
+    height: 200px;
+    width: 200px;
+    background: #aaa;
+  }

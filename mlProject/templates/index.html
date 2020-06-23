@@ -1,0 +1,89 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Covid Predictor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" >
+  </head>
+  <body>
+      <div class="jumbotron text-center" style="margin-bottom:0">
+        <h1> Covid-19 Predictor</h1>
+        <p>This is prediction and forecasting web-app for corona virus pandemic, which has affected the world dynamics in an unprecendent way.</p>
+      </div>
+
+      <div class="container" style="margin-top:30px">
+      <div class="row">
+        <div class="col-sm-4">
+          <h2>About Covid-19</h2>
+          <div class="Covidimg"><img src="/static/Covid.jpg" alt="Covid Image" width="200" height="200"></div>
+          <p>Coronavirus disease 2019 (COVID-19) is an infectious disease caused by severe acute respiratory syndrome
+             coronavirus 2 (SARS-CoV-2).[9] It was first identified in December 2019 in Wuhan, China, and has resulted
+             in an ongoing pandemic.[10][11] The first case may be traced back to 17 November 2019.[12] As of 11 June 2020,
+             more than 7.41 million cases have been reported across 188 countries and territories, resulting in more than
+             417,000 deaths. More than 3.48 million people have recovered. For more info, go to <a href="https://en.wikipedia.org/wiki/Coronavirus_disease_2019">wikipidea</a>.</p>
+          <hr class="d-sm-none">
+        </div>
+        <div class="col-sm-8">
+          <h2><b>Current Status in India and World</b></h2>
+          <p>Number of confirmed cases-World: <b><u>{{Confirmed_World}}</u></b>   |   Number of confirmed cases-India: <b><u>{{Confirmed_India}}</u></b></p>
+          <p>Number of active cases-World: <b><u>{{Active_World}}</u></b>   |   Number of active cases-India: <b><u>{{Active_India}}</u></b></p>
+          <p>Number of recovered cases-World: <b><u>{{Recovered_World}}</u></b>   |   Number of recovered cases-India: <b><u>{{Recovered_India}}</u></b></p>
+          <p>Number of death cases-World: <b><u>{{Deaths_World}}</u></b>   |   Number of death cases-India: <b><u>{{Deaths_India}}</u></b></p>
+          <p>Mortality rate-World: <b><u>{{mortality_rate_World}}%</u></b>   |   Mortality rate-India: <b><u>{{mortality_rate_India}}%</u></b></p>
+          <p>Recovery rate-World: <b><u>{{recovery_rate_World}}%</u></b>   |   Recovery rate-India: <b><u>{{recovery_rate_India}}%</u></b></p>
+          <br>
+          <br>
+          <h2>Predict the status on desired date!</h2>
+          <form method='POST' enctype="multipart/form-data" action='predict'>
+            {% csrf_token %}
+            <label class="my-1 mr-2" for="inlineFormCustomSelectPref"><b>Choose Country</b></label>
+            <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" name='Region'>
+              <option selected value='World'>World</option>
+              <option value='India'>India</option>
+            </select>
+
+            <label class="my-1 mr-2" for="inlineFormCustomSelectPref"><b>Enter Date</b></label>
+            <div class="form-row">
+              <div class="col">
+                <input type="text" class="form-control" placeholder="Year" name='Year' required='true'>
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" placeholder="Month"name='Month' required='true'>
+              </div>
+              <div class="col">
+                <input type="text" class="form-control" placeholder="Date" name='Date' required='true'>
+              </div>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-primary my-1">Submit</button>
+          </form>
+          <br>
+          <br>
+          {% if ans_SVM %}
+          <p>The expected value till the given date is <b><u>{{ ans_SVM}}</u></b> cases with the accuracy <b><u>{{ accuracy_SVM}}%</u></b>.</p>
+          {% endif %}
+
+          {% if ans_Holt %}
+          <p>According to the trend, the forecasted value till the given date is <b><u>{{ ans_Holt}}</u></b> cases with the accuracy <b><u>{{ Holt_accuracy}}%</u></b>.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+      <div class="jumbotron text-center" style="margin-bottom:0">
+      <p>Created by Vedant Bharti.</p>
+      </div>
+  </body>
+
+  <script>
+  if ( window.history.replaceState ) {
+    window.history.replaceState( null, null, window.location.href );
+  }
+  </script>
+</html>
