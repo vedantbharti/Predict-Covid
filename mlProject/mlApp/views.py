@@ -7,8 +7,6 @@ from datetime import timedelta
 from sklearn.linear_model import LinearRegression
 from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error
-from statsmodels.tsa.api import Holt
-import joblib
 from covid import Covid
 
 
@@ -66,9 +64,9 @@ def predict(request):
             SVM = SVR(C=1,degree=5,kernel='poly',epsilon=0.001)
             SVM.fit(np.array(train_data['Days Since']).reshape(-1,1),np.array(train_data['Confirmed']).reshape(-1,1))
             prediction_SVM = SVM.predict(np.array(test_data['Days Since']).reshape(-1,1))
-            rmse_SVM = np.sqrt(mean_squared_error(np.array(test_data['Confirmed']).reshape(-1,1),prediction_SVM))
+            #rmse_SVM = np.sqrt(mean_squared_error(np.array(test_data['Confirmed']).reshape(-1,1),prediction_SVM))
 
-            accuracy_SVM = (1-np.mean(np.abs((np.array(test_data['Confirmed']).reshape(-1,1)-prediction_SVM)/np.array(test_data['Confirmed']).reshape(-1,1))))*100
+            #accuracy_SVM = (1-np.mean(np.abs((np.array(test_data['Confirmed']).reshape(-1,1)-prediction_SVM)/np.array(test_data['Confirmed']).reshape(-1,1))))*100
 
             d = byDate.index[-1]
             d1 = dt.date(year,month,date)
@@ -86,22 +84,6 @@ def predict(request):
 
             ans_SVM = int(round(model_predictions['SVR'].iloc[-1]))
 
-            train_data_ts = byDate.iloc[:int(byDate.shape[0]*0.85)]
-            test_data_ts = byDate.iloc[int(byDate.shape[0]*0.85):]
-            holt = Holt(np.asarray(train_data_ts['Confirmed']),exponential=True).fit(smoothing_level=0.5,smoothing_slope=0.5)
-            y_prediction = test_data_ts.copy()
-            y_prediction['Holt'] = holt.forecast(len(test_data_ts))
-            Holt_accuracy = (1-np.mean(np.abs((np.array(test_data_ts['Confirmed']).reshape(-1,1)-np.array(y_prediction['Holt']).reshape(-1,1))/np.array(test_data_ts['Confirmed']).reshape(-1,1))))*100
-
-            holt_new_date = []
-            holt_new_prediction = []
-            for i in range(1,n):
-              holt_new_date.append(byDate.index[-1]+timedelta(days=i))
-              holt_new_prediction.append(holt.forecast((len(test_data_ts)+i))[-1])
-
-            model_predictions['Holt\'s linear model prediction'] = holt_new_prediction
-            ans_Holt = int(round(model_predictions['Holt\'s linear model prediction'].iloc[-1]))
-
             context = { 'Confirmed_India':Confirmed_India,
                         'Active_India':Active_India,
                         'Recovered_India':Recovered_India,
@@ -114,10 +96,7 @@ def predict(request):
                         'Deaths_World':Deaths_World,
                         'mortality_rate_World':mortality_rate_World,
                         'recovery_rate_World':recovery_rate_World,
-                        'accuracy_SVM':accuracy_SVM,
                         'ans_SVM':ans_SVM,
-                        'Holt_accuracy':Holt_accuracy,
-                        'ans_Holt':ans_Holt
                         }
 
         else:
@@ -129,9 +108,9 @@ def predict(request):
             SVM_India = SVR(C=1,degree=5,kernel='poly',epsilon=0.001)
             SVM_India.fit(np.array(train_data_India['Days Since']).reshape(-1,1),np.array(train_data_India['Confirmed']).reshape(-1,1))
             prediction_SVM_India = SVM_India.predict(np.array(test_data_India['Days Since']).reshape(-1,1))
-            rmse_SVM_India = np.sqrt(mean_squared_error(np.array(test_data_India['Confirmed']).reshape(-1,1),prediction_SVM_India))
+            #rmse_SVM_India = np.sqrt(mean_squared_error(np.array(test_data_India['Confirmed']).reshape(-1,1),prediction_SVM_India))
 
-            accuracy_SVM_India = (1-np.mean(np.abs((np.array(test_data_India['Confirmed']).reshape(-1,1)-prediction_SVM_India)/np.array(test_data_India['Confirmed']).reshape(-1,1))))*100
+            #accuracy_SVM_India = (1-np.mean(np.abs((np.array(test_data_India['Confirmed']).reshape(-1,1)-prediction_SVM_India)/np.array(test_data_India['Confirmed']).reshape(-1,1))))*100
 
             d = byDate_India.index[-1]
             d1 = dt.date(year,month,date)
@@ -149,22 +128,6 @@ def predict(request):
 
             ans_SVM_India = int(round(model_predictions_India['SVR'].iloc[-1]))
 
-            train_data_ts_India = byDate_India.iloc[:int(byDate_India.shape[0]*0.85)]
-            test_data_ts_India = byDate_India.iloc[int(byDate_India.shape[0]*0.85):]
-            holt = Holt(np.asarray(train_data_ts_India['Confirmed']),exponential=True).fit(smoothing_level=0.5,smoothing_slope=0.5)
-            y_prediction_India = test_data_ts_India.copy()
-            y_prediction_India['Holt'] = holt.forecast(len(test_data_ts_India))
-            Holt_accuracy_India = (1-np.mean(np.abs((np.array(test_data_ts_India['Confirmed']).reshape(-1,1)-np.array(y_prediction_India['Holt']).reshape(-1,1))/np.array(test_data_ts_India['Confirmed']).reshape(-1,1))))*100
-
-            holt_new_date_India = []
-            holt_new_prediction_India = []
-            for i in range(1,n):
-              holt_new_date_India.append(byDate_India.index[-1]+timedelta(days=i))
-              holt_new_prediction_India.append(holt.forecast((len(test_data_ts_India)+i))[-1])
-
-            model_predictions_India['Holt\'s linear model prediction'] = holt_new_prediction_India
-            ans_Holt_India = int(round(model_predictions_India['Holt\'s linear model prediction'].iloc[-1]))
-
             context = { 'Confirmed_India':Confirmed_India,
                         'Active_India':Active_India,
                         'Recovered_India':Recovered_India,
@@ -177,10 +140,7 @@ def predict(request):
                         'Deaths_World':Deaths_World,
                         'mortality_rate_World':mortality_rate_World,
                         'recovery_rate_World':recovery_rate_World,
-                        'accuracy_SVM':accuracy_SVM_India,
                         'ans_SVM':ans_SVM_India,
-                        'Holt_accuracy':Holt_accuracy_India,
-                        'ans_Holt':ans_Holt_India
                         }
 
     else:
